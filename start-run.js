@@ -44,11 +44,12 @@ app.use(async ctx => {
     }
   })
 
-  let app = createApp(context)
+  let { app, title } = createApp(context)
   // createApp(context).then(app => {
     renderer.renderToString(app, (err, html) => {
       let template = fs.readFileSync('./template.html', 'utf8')
-      template = template.replace('<!--LINK-OCCUPIED -->', links)
+      template = template.replace('<!--TITLE-OCCUPIED -->', title)
+                .replace('<!--LINK-OCCUPIED -->', links)
                 .replace('<!--CONTENT-OCCUPIED -->', html)
                 .replace('<!--SCRIPT-OCCUPIED -->', scripts)
       ctx.body = template;
