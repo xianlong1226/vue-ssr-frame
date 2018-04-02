@@ -3,16 +3,18 @@ const webpack = require('webpack');
 const extractTextPlugin = require('extract-text-webpack-plugin');
 const htmlWebpackPlugin = require('html-webpack-plugin');
 const glob = require('glob');
+const config = require('config');
 
-const ASSET_PATH = process.env.ASSET_PATH || '/';
+const publishPath = config.publishPath;
+const publicPath = config.publicPath;
 const env = process.env.NODE_ENV || 'development';
 
-let config = {
+let webpackConfig = {
 	entry: {},
 	context: path.resolve(__dirname, "entries"),
 	output: {
 		filename: '[name].node.[chunkhash].js',
-		path: path.resolve(__dirname, 'dist/'), //告诉webpack将文件生成到这个路径下
+		path: path.join(__dirname, publishPath), //告诉webpack将文件生成到这个路径下
 		sourceMapFilename: '[file].map',
 		libraryTarget: 'commonjs2'
 	},
@@ -48,7 +50,7 @@ let config = {
 	},
 	plugins: [
 		new webpack.DefinePlugin({
-			'process.env.ASSET_PATH': JSON.stringify(ASSET_PATH),
+			'process.env.ASSET_PATH': JSON.stringify(publishPath),
 			'process.env.NODE_ENV': JSON.stringify(env),
       'process.env.VUE_ENV': '"server"' // 配置 vue 的环境变量，告诉 vue 是服务端渲染，就不会做耗性能的 dom-diff 操作了
 		})
@@ -89,7 +91,7 @@ glob.sync(adminEntryDir + '*').forEach(function (entry) {
 
 entries.forEach(function (entry) {
 	//添加entry
-	config.entry[entry.name] = [path.join(entry.path, 'index.server.js')];
+	webpackConfig.entry[entry.name] = [path.join(entry.path, 'index.server.js')];
 });
 
-module.exports = config;
+module.exports = webpackConfig;

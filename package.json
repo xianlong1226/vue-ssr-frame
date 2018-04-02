@@ -22,8 +22,8 @@
 		},
 		"homepage": "https://github.com/xianlong1226/vue-ssr-frame#readme",
 		"dependencies": {
+				"config": "^1.30.0",
 				"koa": "^2.5.0",
-				"koa-static": "^4.0.2",
 				"koa-static2": "^0.1.8",
 				"shelljs": "^0.8.1",
 				"vue-server-renderer": "^2.5.16"

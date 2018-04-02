@@ -1,15 +1,17 @@
-let webpack = require("webpack");
-let colors = require('colors');
-let path = require('path');
-let fs = require('fs');
-// let shell = require('shelljs');
-let pageConfig = require('./webpack.config.page.js');
-let nodeConfig = require('./webpack.config.server.js');
+const webpack = require("webpack");
+const colors = require('colors');
+const path = require('path');
+const fs = require('fs');
+const shell = require('shelljs');
+const pageConfig = require('./webpack.config.page.js');
+const nodeConfig = require('./webpack.config.server.js');
+const config = require('config');
 
-let watch = process.argv[2]
+const publishPath = config.publishPath;
+const watch = process.argv[2]
 
 function callback (err, statses) {
-  const manifestPath = path.join(pageConfig.output.path, './manifest.json')
+  const manifestPath = path.join(__dirname, publishPath, 'manifest.json')
   let manifest = {}
 
   if (fs.existsSync(manifestPath)) {
@@ -33,7 +35,7 @@ function callback (err, statses) {
       const files = entry.chunks.map(c => c.files)
         .reduce((prev, next) => (prev).concat(next))
         .map((file) => {
-          return fixPathSlash(path.join('/', pageConfig.output.path, file))
+          return fixPathSlash('./' + path.join(publishPath, file))
         })
 
       let entryFilePathConfig = manifest.files[urlPath];
@@ -65,9 +67,18 @@ function fixPathSlash (pathToFix) {
   return pathToFix.replace(/\\/g, '/')
 }
 
-let compiler = webpack([pageConfig, nodeConfig]);
-if (watch) { 
-  compiler.watch({}, callback)
-} else {
-  compiler.run(callback)
+function run() {
+  console.log(colors.green('开始编译...'));
+  shell.rm('-rf', path.join(__dirname, publishPath));
+
+  let compiler = webpack([pageConfig, nodeConfig]);
+  if (watch) { 
+    compiler.watch({}, callback)
+  } else {
+    compiler.run(callback)
+  }
+}
+
+module.exports = {
+  run: run
 }

@@ -6,10 +6,12 @@ const fs = require('fs');
 const colors = require('colors');
 const serverRender = require('vue-server-renderer');
 const app = new koa();
+const config = require('config');
 
+const publishPath = config.publishPath;
 const renderer = require('vue-server-renderer').createRenderer()
 
-app.use(serve('dist', __dirname + '/dist'));
+app.use(serve(publishPath.replace(/\//g, ''), path.join(__dirname, publishPath)));
 
 app.use(async ctx => {
   let url = ctx.url.substring(1);
@@ -18,11 +20,11 @@ app.use(async ctx => {
     return
   }
 
-  if (url.startsWith('dist')) {
+  if (url.startsWith(publishPath)) {
     return
   }
 
-  const manifestPath = path.join(__dirname, 'dist/manifest.json')
+  const manifestPath = path.join(__dirname, publishPath, '/manifest.json')
   let entryFilePathConfig = require(manifestPath).files[url];
 
   const context = { url: '/router1' }
@@ -36,9 +38,9 @@ app.use(async ctx => {
   // createApp = require('./entries/' + url + '/index.server.js').default
   entryFilePathConfig.page.forEach(filePath => {
     if (filePath.endsWith('.js')) {
-      scripts += `<script type="text/javascript" src="${filePath.replace(__dirname, '')}"></script>`
+      scripts += `<script type="text/javascript" src="${filePath}"></script>`
     } else if (filePath.endsWith('.css')) {
-      links += `<link type="text/css" rel="stylesheet" href="${filePath.replace(__dirname, '')}" />`
+      links += `<link type="text/css" rel="stylesheet" href="${filePath}" />`
     }
   })
 
@@ -57,10 +59,8 @@ app.use(async ctx => {
 });
 
 app.listen(3000, function(){
-  console.log('server start listen 3000')
-});
+  console.log('server start listen 3000');
 
-// 开始编译代码
-console.log(colors.green('开始编译...'))
-shell.rm('-rf', path.join(__dirname, 'dist'));
-require('./start-build.js');
+  // 开始编译代码
+  require('./start-build.js').run();
+});

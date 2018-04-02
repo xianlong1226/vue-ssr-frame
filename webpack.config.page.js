@@ -3,17 +3,19 @@ const webpack = require('webpack');
 const extractTextPlugin = require('extract-text-webpack-plugin');
 const htmlWebpackPlugin = require('html-webpack-plugin');
 const glob = require('glob');
+const config = require('config');
 
-const ASSET_PATH = process.env.ASSET_PATH || '/dist/';
+const publishPath = config.publishPath;
+const publicPath = config.publicPath;
 
-let config = {
+let webpackConfig = {
 	entry: {},
 	context: path.resolve(__dirname, "entries"),
 	output: {
 		filename: '[name].page.[chunkhash].js',
-		path: path.resolve(__dirname, 'dist/'), //告诉webpack将文件生成到这个路径下
+		path: path.join(__dirname, publishPath), //告诉webpack将文件生成到这个路径下
 		sourceMapFilename: '[file].map',
-		publicPath: ASSET_PATH //告诉webpack-dev-server静态资源的存放路径
+		publicPath: '/' + publicPath.replace(/\//g, '') + '/'
 	},
 	target: 'web', 
 
@@ -87,7 +89,7 @@ let config = {
 		}),
 		new extractTextPlugin('[name].page.[contenthash].css'),
 		new webpack.DefinePlugin({
-			'process.env.ASSET_PATH': JSON.stringify(ASSET_PATH)
+			'process.env.ASSET_PATH': publishPath
 		})
 	],
 	resolve: {
@@ -126,13 +128,13 @@ glob.sync(adminEntryDir + '*').forEach(function (entry) {
 
 entries.forEach(function (entry) {
 	//添加entry
-	config.entry[entry.name] = [path.join(entry.path, 'index.js')];
+	webpackConfig.entry[entry.name] = [path.join(entry.path, 'index.js')];
 });
 
-config.plugins.push(new webpack.optimize.CommonsChunkPlugin({
+webpackConfig.plugins.push(new webpack.optimize.CommonsChunkPlugin({
 	name: 'common',
 	minChunks: 2, //只要有两个以上的模块包含同样的模块就提取到公共js中
 	chunks: chunknames
 }));
 
-module.exports = config;
+module.exports = webpackConfig;
