@@ -25,12 +25,15 @@ app.use(async ctx => {
   const manifestPath = path.join(__dirname, 'dist/manifest.json')
   let entryFilePathConfig = require(manifestPath).files[url];
 
-  let app, scripts = '', links = '';
+  const context = { url: '/router1' }
+
+  let createApp, scripts = '', links = '';
   entryFilePathConfig.node.forEach(filePath => {
     if (filePath.indexOf('node') != -1 && !filePath.endsWith('map')) {
-      app = require(filePath).default();
+      createApp = require(filePath).default;
     }
   })
+  // createApp = require('./entries/' + url + '/index.server.js').default
   entryFilePathConfig.page.forEach(filePath => {
     if (filePath.endsWith('.js')) {
       scripts += `<script type="text/javascript" src="${filePath.replace(__dirname, '')}"></script>`
@@ -39,13 +42,18 @@ app.use(async ctx => {
     }
   })
 
-  renderer.renderToString(app, (err, html) => {
-    let template = fs.readFileSync('./template.html', 'utf8')
-    template = template.replace('<!--LINK-OCCUPIED -->', links)
-               .replace('<!--CONTENT-OCCUPIED -->', html)
-               .replace('<!--SCRIPT-OCCUPIED -->', scripts)
-    ctx.body = template;
-  });
+  let app = createApp(context)
+  // createApp(context).then(app => {
+    renderer.renderToString(app, (err, html) => {
+      let template = fs.readFileSync('./template.html', 'utf8')
+      template = template.replace('<!--LINK-OCCUPIED -->', links)
+                .replace('<!--CONTENT-OCCUPIED -->', html)
+                .replace('<!--SCRIPT-OCCUPIED -->', scripts)
+      ctx.body = template;
+    });
+  // }).catch(err => {
+  //   console.error(err.stack)
+  // });
 });
 
 app.listen(3000, function(){

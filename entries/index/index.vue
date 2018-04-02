@@ -4,6 +4,9 @@
 		<p>{{ count1 }}</p>
     <button v-on:click="increment">add</button>
     <button v-on:click="decrement">dec</button>
+		<router-link to="/router1" exact>Go to router1</router-link>
+		<router-link to="/router2">Go to router2</router-link>
+		<router-view></router-view>
 	</div>
 </template>
 

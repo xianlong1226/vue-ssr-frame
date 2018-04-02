@@ -59,7 +59,7 @@ let config = {
 			'fonts': path.join(__dirname, 'fonts')
 		}
 	},
-	devtool: false // 'cheap-module-source-map', // 服务器端渲染就不用了
+	devtool: 'source-map',
 }
 
 //业务入口文件所在的目录
