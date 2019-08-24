@@ -94,8 +94,7 @@ let webpackConfig = {
 	],
 	resolve: {
 		alias: {
-			'components': path.join(__dirname, 'components'),
-			'fonts': path.join(__dirname, 'fonts')
+			'components': path.join(__dirname, 'components')
 		}
 	},
 	devtool: 'cheap-module-source-map',

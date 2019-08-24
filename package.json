@@ -4,8 +4,8 @@
 		"description": "vue服务器端渲染脚手架",
 		"main": "app.js",
 		"scripts": {
-				"dev": "node start-run.js && node start-build-page.js watch && node start-build-server.js watch",
-				"prod": "node start-run.js && node start-build-page.js && node start-build-server.js"
+				"dev": "node start-run.js watch",
+				"prod": "node start-run.js"
 		},
 		"repository": {
 				"type": "git",

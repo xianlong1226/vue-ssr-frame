@@ -32,7 +32,7 @@
 						console.log(result)
 					}
 				})
-            },
+      },
 			increment () {
 				this.$store.commit('increment', 2)
 			},

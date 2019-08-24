@@ -1,15 +1,15 @@
 const koa = require('koa');
 const serve = require('koa-static2');
-const shell = require('shelljs');
+// const shell = require('shelljs');
 const path = require('path');
 const fs = require('fs');
-const colors = require('colors');
+// const colors = require('colors');
 const serverRender = require('vue-server-renderer');
 const app = new koa();
 const config = require('config');
 
 const publishPath = config.publishPath;
-const renderer = require('vue-server-renderer').createRenderer()
+const renderer = serverRender.createRenderer()
 
 app.use(serve(publishPath.replace(/\//g, ''), path.join(__dirname, publishPath)));
 
@@ -25,7 +25,7 @@ app.use(async ctx => {
   }
 
   const manifestPath = path.join(__dirname, publishPath, '/manifest.json')
-  let entryFilePathConfig = require(manifestPath).files[url];
+  let entryFilePathConfig = JSON.parse(fs.readFileSync(manifestPath, 'utf8')).files[url];
 
   const context = { url: '/router1' }
 

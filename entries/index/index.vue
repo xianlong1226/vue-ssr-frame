@@ -40,6 +40,7 @@
       },
 			increment () {
 				// this.$store.commit('increment', 2)
+				console.log($('.app_index').text())
         this.count1++;
 			},
 			decrement () {
